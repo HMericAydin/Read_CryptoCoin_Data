@@ -45,6 +45,6 @@ class Program
     static void priceChanged(float coin, float init)
     {
         Console.WriteLine("The price changed! = " + coin);
-        Console.WriteLine("The price changed! = " + 100*init/coin+"%");
+        Console.WriteLine("The price changed! = " + 100*coin/init+"%");
     }
 }
