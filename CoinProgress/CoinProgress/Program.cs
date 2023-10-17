@@ -7,10 +7,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        LiveData("BTCUSDT");
+        LiveData("BTCUSDT", 2);
     }
 
-    private static void LiveData(string coin)
+    private static void LiveData(string coin, double profitPercentage)
     {
         float lastPrice = 0;
         float initialPrice = CoinSelection(coin);
@@ -23,7 +23,7 @@ class Program
             curPrice = CoinSelection(coin);
             if (lastPrice != curPrice)
             {
-                if (initialPrice > curPrice * 1.03) // If the profit is 3% stop the process
+                if (initialPrice > curPrice * ((100+profitPercentage)/100) )
                 {
                     entry_exit = false;
                 }
