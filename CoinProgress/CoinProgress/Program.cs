@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -7,13 +7,20 @@ class Program
 {
     static void Main(string[] args)
     {
+        LiveData("BTCUSDT");
+    }
+
+    private static void LiveData(string coin)
+    {
         float lastPrice = 0;
+        float initialPrice = CoinSelection(coin);
         float curPrice;
-        float initialPrice = CoinSelection("BTCUSDT"); // Get the initial data after starting the process.
+
         bool entry_exit = true;
+
         while (entry_exit)
         {
-            curPrice = CoinSelection("BTCUSDT");
+            curPrice = CoinSelection(coin);
             if (lastPrice != curPrice)
             {
                 if (initialPrice > curPrice * 1.03) // If the profit is 3% stop the process
