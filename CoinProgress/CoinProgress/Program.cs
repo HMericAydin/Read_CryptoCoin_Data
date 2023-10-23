@@ -1,57 +1,37 @@
+﻿using CoinProgress;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        LiveData("BTCUSDT", 2);
-    }
+        string[] CryptoCurrencies = new string[] { "BTCUSDT", "ETHUSDT", "XRPUSDT", "LTCUSDT", "BCHUSDT", "ADAUSDT", "DOTUSDT", "LINKUSDT", "XLMUSDT", "EOSUSDT", "XMRUSDT", "XTZUSDT", "TRXUSDT", "BNBUSDT", "VETUSDT", "NEOUSDT", "DASHUSDT", "ZECUSDT", "IOTAUSDT", "ATOMUSDT", "DOGEUSDT", "ALGOUSDT", "FILUSDT", "XEMUSDT", "WAVESUSDT", "UNIUSDT", "MKRUSDT", "ENJUSDT", "SUSHIUSDT", "SNXUSDT", "YFIUSDT", "COMPUSDT" };
+        LiveData coin = new LiveData();
+        /*Console.WriteLine("Enter cryptocurrency name: ");
+        string crypto = Console.ReadLine();
+        Console.WriteLine("The initial value is = " + await coin.CoinSelectionAsync(crypto));*/
 
-    private static void LiveData(string coin, double profitPercentage)
-    {
-        float lastPrice = 0;
-        float initialPrice = CoinSelection(coin);
-        float curPrice;
+        List<Task> tasks = new List<Task>();
 
-        bool entry_exit = true;
-
-        while (entry_exit)
+        foreach (string currency in CryptoCurrencies)
         {
-            curPrice = CoinSelection(coin);
-            if (lastPrice != curPrice)
-            {
-                if (initialPrice > curPrice * ((100+profitPercentage)/100) )
-                {
-                    entry_exit = false;
-                }
-                lastPrice = curPrice;
-                priceChanged(lastPrice, initialPrice);
-            }
-            Thread.Sleep(500); // Wait for 0.5 seconds
+            tasks.Add(UpdateCryptoPrice(coin, currency));
         }
+
+        await Task.WhenAll(tasks);
     }
 
-    private static float CoinSelection(string crypto) // Select the live coin data
+    static async Task UpdateCryptoPrice(LiveData coin, string currency)
     {
-        float price = 0;
-        using (var client = new HttpClient())
+        while (true)
         {
-            var response = client.GetAsync("https://api.binance.com/api/v1/ticker/price?symbol="+crypto).Result;
-            var content = response.Content.ReadAsStringAsync().Result;
-            dynamic data = JsonConvert.DeserializeObject(content);
-            price = data.price;
-            Console.WriteLine(crypto+ " is " + price);
-            Console.WriteLine("#################################");
+            await coin.CryptoFollowAsync(currency);
+            await Task.Delay(500); // Wait for 0.5 seconds
         }
-        return price;
-    }
-
-    static void priceChanged(float coin, float init)
-    {
-        Console.WriteLine("The price changed! = " + coin);
-        Console.WriteLine("The price changed! = " + 100*coin/init+"%");
     }
 }
